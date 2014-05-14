@@ -3,7 +3,9 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     browserify = require('gulp-browserify'),
     concat = require('gulp-concat'),
-    clean = require('gulp-clean');
+    clean = require('gulp-clean'),
+    sass = require('gulp-sass'),
+    autoprefixer = require('gulp-autoprefixer');
 
 var embedlr = require('gulp-embedlr'),
     refresh = require('gulp-livereload'),
@@ -48,6 +50,14 @@ gulp.task('views', function(){
         .pipe(refresh(lrserver));
 });
 
+gulp.task('styles', function(){
+    gulp.src('app/styles/*.scss')
+        .pipe(sass({onError: function(e) {console.log(e); }}))
+        .pipe(autoprefixer("last 2 versions", "> %1", "ie 8"))
+        .pipe(gulp.dest('dist/css'))
+        .pipe(refresh(lrserver));
+})
+
 
 gulp.task('watch', ['lint'], function(){
 
@@ -59,6 +69,10 @@ gulp.task('watch', ['lint'], function(){
     gulp.watch(['app/index.html', 'app/views/**/*.html'], [
         'views'
     ]);
+
+    gulp.watch(['app/styles/**/*.scss'], [
+        'styles'
+    ])
 });
 
 gulp.task('dev', function(){
